@@ -6,7 +6,7 @@ import retrofit2.create
 
 class ApiService {
     companion object {
-        const val BASE_URL = "base_url"
+        const val BASE_URL = "https://api.themoviedb.org/3/movie/"
     }
     val endPoint: ApiEndPoint
         get() {
