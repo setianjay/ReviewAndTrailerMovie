@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.setianjay.movieapp.R
@@ -51,7 +52,14 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_popular -> {
+                Toast.makeText(applicationContext, "Action Popular", Toast.LENGTH_SHORT).show()
+                true
+            }
+            R.id.action_now_playing -> {
+                Toast.makeText(applicationContext, "Action Now Playing", Toast.LENGTH_SHORT).show()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -61,10 +69,6 @@ class MainActivity : AppCompatActivity() {
         rvMovies = findViewById(R.id.rv_movie)
         pbMovies = findViewById(R.id.pb_movie)
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
     }
 
     private fun setUpRecycleView(){
