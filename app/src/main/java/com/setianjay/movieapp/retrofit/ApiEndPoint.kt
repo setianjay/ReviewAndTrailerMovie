@@ -8,7 +8,14 @@ import retrofit2.http.Query
 interface ApiEndPoint {
 
     @GET("now_playing")
-fun getMovieNowPlaying(
+    fun getMovieNowPlaying(
         @Query("api_key") api_key: String,
-        @Query("page") page: Int) : Call<MovieResponse>
+        @Query("page") page: Int
+    ): Call<MovieResponse>
+
+    @GET("popular")
+    fun getMoviePopuler(
+        @Query("api_key") api_key: String,
+        @Query("page") page: Int
+    ): Call<MovieResponse>
 }

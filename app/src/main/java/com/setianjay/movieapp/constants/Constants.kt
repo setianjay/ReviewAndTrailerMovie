@@ -5,4 +5,7 @@ object Constants {
     const val API_KEY = "13b1cda985269ed32518f3f9814be278"
     const val BACKDROP_PATH = "https://www.themoviedb.org/t/p/w1000_and_h563_face"
     const val POSTER_PATH = "https://www.themoviedb.org/t/p/w440_and_h660_face"
+
+    const val movieNowPlaying = 0
+    const val moviePopular = 1
 }

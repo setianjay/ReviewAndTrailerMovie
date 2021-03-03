@@ -1,6 +1,7 @@
 package com.setianjay.movieapp.ui
 
 import android.os.Bundle
+import android.text.method.MovementMethod
 import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -23,6 +24,8 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private val TAG: String = "MainActivity"
+    private var movieCategory = 0
+    private val api = ApiService().endPoint
     lateinit var movieAdapter: MovieAdapter
     lateinit var rvMovies: RecyclerView
     lateinit var pbMovies: ProgressBar
@@ -47,53 +50,39 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_popular -> {
-                Toast.makeText(applicationContext, "Action Popular", Toast.LENGTH_SHORT).show()
-                true
-            }
-            R.id.action_now_playing -> {
-                Toast.makeText(applicationContext, "Action Now Playing", Toast.LENGTH_SHORT).show()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun setUpView(){
+    private fun setUpView() {
         // Initialisasi View
         rvMovies = findViewById(R.id.rv_movie)
         pbMovies = findViewById(R.id.pb_movie)
 
     }
 
-    private fun setUpRecycleView(){
+    private fun setUpRecycleView() {
         movieAdapter = MovieAdapter(arrayListOf())
         rvMovies.apply {
-            layoutManager = GridLayoutManager(context,2)
+            layoutManager = GridLayoutManager(context, 2)
             adapter = movieAdapter
         }
 
     }
 
-    fun showLoading(loading: Boolean){
-        return when(loading){
-            true -> pbMovies.visibility = View.VISIBLE
-            false -> pbMovies.visibility = View.GONE
-        }
-    }
-
-    fun getMovie(){
+    private fun getMovie() {
         showLoading(true)
-        ApiService().endPoint.getMovieNowPlaying(Constants.API_KEY,1)
-            .enqueue(object: Callback<MovieResponse>{
+        var apiCall: Call<MovieResponse>? = null
+
+        when (movieCategory) {
+            0 -> {
+                apiCall = api.getMovieNowPlaying(Constants.API_KEY, 1)
+            }
+            1 -> {
+                apiCall = api.getMoviePopuler(Constants.API_KEY, 1)
+            }
+        }
+
+        apiCall!!.enqueue(object : Callback<MovieResponse> {
                 override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                     showLoading(false)
-                    Log.d(TAG,t.toString())
+                    Log.d(TAG, t.toString())
                 }
 
                 override fun onResponse(
@@ -101,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                     response: Response<MovieResponse>
                 ) {
                     showLoading(false)
-                    if (response.isSuccessful){
+                    if (response.isSuccessful) {
                         showMovie(response.body()!!)
                     }
                 }
@@ -109,10 +98,38 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
-    fun showMovie(response: MovieResponse){
+    private fun showMovie(response: MovieResponse) {
         movieAdapter.setData(response.results)
 //        for (movie in response.results){
 //            println(movie)
 //        }
+    }
+
+    private fun showLoading(loading: Boolean) {
+        return when (loading) {
+            true -> pbMovies.visibility = View.VISIBLE
+            false -> pbMovies.visibility = View.GONE
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        return when (item.itemId) {
+            R.id.action_popular -> {
+                Toast.makeText(applicationContext, "Action Popular", Toast.LENGTH_SHORT).show()
+                movieCategory = 1
+                getMovie()
+                true
+            }
+            R.id.action_now_playing -> {
+                Toast.makeText(applicationContext, "Action Now Playing", Toast.LENGTH_SHORT).show()
+                movieCategory = 0
+                getMovie()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
