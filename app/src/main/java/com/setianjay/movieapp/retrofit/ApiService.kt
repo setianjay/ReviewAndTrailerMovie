@@ -1,17 +1,24 @@
 package com.setianjay.movieapp.retrofit
 
+import com.setianjay.movieapp.constants.Constants
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
+
+
 
 class ApiService {
-    companion object {
-        const val BASE_URL = "https://api.themoviedb.org/3/movie/"
-    }
     val endPoint: ApiEndPoint
         get() {
+            val interceptor = HttpLoggingInterceptor()
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC)
+            val httpClient = OkHttpClient.Builder()
+                .addInterceptor(interceptor)
+                .build()
            val retrofit = Retrofit.Builder()
-               .baseUrl(BASE_URL)
+               .baseUrl(Constants.BASE_URL)
+               .client(httpClient)
                .addConverterFactory(GsonConverterFactory.create())
                .build()
 
