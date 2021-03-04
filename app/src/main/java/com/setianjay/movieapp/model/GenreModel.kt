@@ -1,4 +1,6 @@
 package com.setianjay.movieapp.model
 
-class GenreModel {
-}
+data class GenreModel(
+    val id: Int?,
+    val name: String?
+)
