@@ -21,9 +21,9 @@ interface ApiEndPoint {
         @Query("page") page: Int
     ): Call<MovieResponse>
 
-    @GET("/{movie_id}")
+    @GET("{movie_id}")
     fun getMovieDetails(
-        @Path("movie_id") movie_id: String,
+        @Path("movie_id") movie_id: Int,
         @Query("api_key") api_key: String
     ): Call<DetailResponse>
 

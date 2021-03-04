@@ -1,5 +1,6 @@
 package com.setianjay.movieapp.ui
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.setianjay.movieapp.R
 import com.setianjay.movieapp.adapter.MovieAdapter
 import com.setianjay.movieapp.constants.Constants
+import com.setianjay.movieapp.model.MovieModel
 import com.setianjay.movieapp.model.MovieResponse
 import com.setianjay.movieapp.retrofit.ApiService
 import retrofit2.Call
@@ -38,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
-        setUpView()
+        initView()
         setUpRecycleView()
         transStatusBar()
     }
@@ -54,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun setUpView() {
+    private fun initView() {
         // Initialisasi View
         rvMovies = findViewById(R.id.rv_movie)
         pbMovies = findViewById(R.id.pb_movie)
@@ -62,10 +64,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpRecycleView() {
-        movieAdapter = MovieAdapter(arrayListOf())
+        movieAdapter = MovieAdapter(arrayListOf(),object: MovieAdapter.OnAdapterListener{
+            override fun onClick(movie: MovieModel) {
+                val intent = Intent(applicationContext,DetailActivity::class.java)
+                intent.putExtra("movie_id",movie.id)
+                startActivity(intent)
+//                Toast.makeText(applicationContext, "${movie.title}", Toast.LENGTH_SHORT).show()
+            }
+
+        })
         rvMovies.apply {
             layoutManager = GridLayoutManager(context, 2)
             adapter = movieAdapter
+            setHasFixedSize(true)
         }
 
     }
