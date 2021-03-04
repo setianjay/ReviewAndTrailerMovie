@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+
         rvMovies.apply {
             layoutManager = GridLayoutManager(context, 2)
             adapter = movieAdapter
@@ -122,7 +123,7 @@ class MainActivity : AppCompatActivity() {
         apiCall!!.enqueue(object : Callback<MovieResponse> {
                 override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                     showLoading(false)
-                    Log.d(TAG, t.toString())
+                    Log.e(TAG, t.toString())
                 }
 
                 override fun onResponse(

@@ -1,8 +1,11 @@
 package com.setianjay.movieapp.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -17,7 +20,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DetailActivity : AppCompatActivity() {
+class DetailActivity : AppCompatActivity(), View.OnClickListener {
     private val TAG = "DetailActivity"
     var movie_id = 0 // Get intent data
 
@@ -35,6 +38,7 @@ class DetailActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
         initView()
         initData()
+        initListener()
     }
 
     override fun onStart() {
@@ -51,10 +55,6 @@ class DetailActivity : AppCompatActivity() {
         tvDetailOverview = findViewById(R.id.tv_detail_overview)
 
 //        findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = title
-        fabPlay.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
 
         supportActionBar!!.title = ""
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -64,12 +64,16 @@ class DetailActivity : AppCompatActivity() {
         movie_id = intent.getIntExtra("movie_id",0)
     }
 
+    private fun initListener(){
+        fabPlay.setOnClickListener(this)
+    }
+
 
     private fun getDetail(){
         ApiService().endPoint.getMovieDetails(movie_id,Constants.API_KEY)
             .enqueue(object: Callback<DetailResponse>{
                 override fun onFailure(call: Call<DetailResponse>, t: Throwable) {
-                    Log.d(TAG,t.toString())
+                    Log.e(TAG,t.toString())
                 }
 
                 override fun onResponse(
@@ -87,9 +91,9 @@ class DetailActivity : AppCompatActivity() {
     private fun showDetail(response: DetailResponse){
         var listGenre: String = ""
         // Show Image
-        val posterPath = Constants.POSTER_PATH + response.poster_path
+        val backdrop = Constants.BACKDROP_PATH + response.backdrop_path
         Picasso.get()
-            .load(posterPath)
+            .load(backdrop)
             .error(R.drawable.play_white)
             .into(imgDetail)
 
@@ -104,14 +108,21 @@ class DetailActivity : AppCompatActivity() {
             .joinToString(", ")
             .trimEnd(',',' ')
         tvDetailGenre.text = genre
-
-
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return super.onSupportNavigateUp()
 
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.fab_play -> {
+                val intent = Intent(applicationContext,TrailerActivity::class.java)
+                intent.putExtra("movie_id",movie_id)
+                startActivity(intent)
+            }
+        }
     }
 }
