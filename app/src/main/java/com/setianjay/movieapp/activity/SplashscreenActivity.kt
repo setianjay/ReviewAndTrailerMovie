@@ -1,4 +1,4 @@
-package com.setianjay.movieapp.ui
+package com.setianjay.movieapp.activity
 
 import android.content.Intent
 import android.graphics.Color

@@ -1,4 +1,4 @@
-package com.setianjay.movieapp.ui
+package com.setianjay.movieapp.activity
 
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +13,6 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import com.setianjay.movieapp.R
 import com.setianjay.movieapp.adapter.TrailerAdapter
 import com.setianjay.movieapp.constants.Constants
-import com.setianjay.movieapp.model.TrailerModel
 import com.setianjay.movieapp.model.TrailerResponse
 import com.setianjay.movieapp.retrofit.ApiService
 import retrofit2.Call

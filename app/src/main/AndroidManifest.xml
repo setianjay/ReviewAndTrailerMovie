@@ -11,12 +11,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MovieApp">
-        <activity android:name=".ui.TrailerActivity"></activity>
+        <activity android:name=".activity.TrailerActivity"></activity>
         <activity
-            android:name=".ui.DetailActivity"
+            android:name=".activity.DetailActivity"
             android:label="@string/title_activity_detail"
             android:theme="@style/Theme.MovieApp.NoActionBar" />
-        <activity android:name=".ui.SplashscreenActivity">
+        <activity android:name=".activity.SplashscreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.MovieApp.NoActionBar" />
     </application>
