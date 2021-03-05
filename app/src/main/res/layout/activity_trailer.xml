@@ -14,9 +14,6 @@
             android:id="@+id/youtube_player_trailer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            app:videoId="S0Q4gqBUs7c"
-            app:autoPlay="true"
             app:showFullScreenButton="false"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
