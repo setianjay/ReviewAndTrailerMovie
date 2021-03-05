@@ -16,30 +16,31 @@ import com.setianjay.movieapp.model.MovieResponse
 import com.setianjay.movieapp.util.Util
 import com.squareup.picasso.Picasso
 
-class MovieAdapter(val movies: ArrayList<MovieModel>,val listener: OnAdapterListener): RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
+class MovieAdapter(val movies: ArrayList<MovieModel>, val listener: OnAdapterListener) :
+    RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
     private val TAG = "MovieAdapter"
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)= ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_movies,parent,false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
+        LayoutInflater.from(parent.context).inflate(R.layout.item_movies, parent, false)
     )
 
     override fun getItemCount(): Int {
-       return movies.size
+        return movies.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(movies[position])
-        holder.imgMovies.setOnClickListener{
+        holder.imgMovies.setOnClickListener {
             listener.onClick(movies[position])
         }
     }
 
-    inner class ViewHolder(view: View): RecyclerView.ViewHolder(view){
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imgMovies = view.findViewById<ImageView>(R.id.img_movie)
         val labelTitleMovies = view.findViewById<TextView>(R.id.tv_label_title)
         val labelDateMovies = view.findViewById<TextView>(R.id.tv_label_date)
 
-        fun bind(movies: MovieModel){
+        fun bind(movies: MovieModel) {
             labelTitleMovies.text = movies.title
             labelDateMovies.text = movies.release_date
             Picasso.get()
@@ -50,13 +51,13 @@ class MovieAdapter(val movies: ArrayList<MovieModel>,val listener: OnAdapterList
 
     }
 
-    fun setData(newMovies: List<MovieModel>){
+    fun setData(newMovies: List<MovieModel>) {
         movies.clear()
         movies.addAll(newMovies)
         notifyDataSetChanged()
     }
 
-    interface OnAdapterListener{
+    interface OnAdapterListener {
         fun onClick(movie: MovieModel)
     }
 
