@@ -1,60 +1,178 @@
 package com.setianjay.movieapp.fragment
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.setianjay.movieapp.R
+import com.setianjay.movieapp.activity.DetailActivity
+import com.setianjay.movieapp.adapter.MovieAdapter
+import com.setianjay.movieapp.constants.Constants
+import com.setianjay.movieapp.model.MovieModel
+import com.setianjay.movieapp.model.MovieResponse
+import com.setianjay.movieapp.retrofit.ApiService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [PopularFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class PopularFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private val TAG = "PopularFragment"
+    private lateinit var v: View
+    private lateinit var nsvMovie: NestedScrollView
+    private lateinit var rvMovie: RecyclerView
+    private lateinit var pbMovie: ProgressBar
+    private lateinit var pbMovieNextPage: ProgressBar
+    private lateinit var movieAdapter: MovieAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var scrolling = false
+    private var currentPage = 1
+    private var totalPages = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_popular, container, false)
+        v = inflater.inflate(R.layout.fragment_popular, container, false)
+        return v
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PopularFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            PopularFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
+        setUpRecycleView()
+        setUpListener()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        getMovie()
+        showLoaderNextPage(false)
+    }
+
+    private fun initView(){
+        nsvMovie = v.findViewById(R.id.nsv_movie)
+        rvMovie = v.findViewById(R.id.rv_movie)
+        pbMovie = v.findViewById(R.id.pb_movie)
+        pbMovieNextPage = v.findViewById(R.id.pb_movie_next_page)
+    }
+
+    private fun setUpRecycleView(){
+        movieAdapter = MovieAdapter(arrayListOf(),object : MovieAdapter.OnAdapterListener{
+            override fun onClick(movie: MovieModel) {
+                val intent = Intent(requireContext(),DetailActivity::class.java)
+                intent.putExtra("movie_id",movie.id)
+                startActivity(intent)
+            }
+
+        })
+
+        rvMovie.apply {
+            layoutManager = GridLayoutManager(context,2)
+            adapter = movieAdapter
+            setHasFixedSize(true)
+        }
+    }
+
+    private fun setUpListener(){
+        nsvMovie.setOnScrollChangeListener(object : NestedScrollView.OnScrollChangeListener{
+            override fun onScrollChange(
+                v: NestedScrollView?,
+                scrollX: Int,
+                scrollY: Int,
+                oldScrollX: Int,
+                oldScrollY: Int
+            ) {
+                if (scrollY == v!!.getChildAt(0).measuredHeight - v.measuredHeight){
+                    if (!scrolling){
+                        if (currentPage <= totalPages){
+                            getMovieNextPage()
+                        }
+                    }
                 }
             }
+
+        })
     }
+
+    private fun getMovie(){
+        showLoading(true)
+        ApiService().endPoint.getMoviePopuler(Constants.API_KEY,currentPage)
+            .enqueue(object: Callback<MovieResponse>{
+                override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                    Log.e(TAG,t.toString())
+                }
+
+                override fun onResponse(
+                    call: Call<MovieResponse>,
+                    response: Response<MovieResponse>
+                ) {
+                    if (response.isSuccessful){
+                        showLoading(false)
+                        showMovie(response.body()!!)
+                    }
+                }
+            })
+    }
+
+    private fun showMovie(data: MovieResponse){
+        totalPages = data.total_pages
+        movieAdapter.setData(data.results)
+    }
+
+    private fun getMovieNextPage(){
+        showLoaderNextPage(true)
+        currentPage += 1
+
+        ApiService().endPoint.getMovieNowPlaying(Constants.API_KEY,currentPage)
+            .enqueue(object: Callback<MovieResponse>{
+                override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                    Log.e(TAG,t.toString())
+                }
+
+                override fun onResponse(
+                    call: Call<MovieResponse>,
+                    response: Response<MovieResponse>
+                ) {
+                    if (response.isSuccessful){
+                        showLoaderNextPage(false)
+                        showDataMovieNextPage(response.body()!!)
+                    }
+                }
+
+            })
+    }
+
+    private fun showDataMovieNextPage(data: MovieResponse){
+        movieAdapter.setDataNextPage(data.results)
+    }
+
+    private fun showLoading(loading: Boolean){
+        return when(loading){
+            true -> pbMovie.visibility = View.VISIBLE
+            false -> pbMovie.visibility = View.GONE
+        }
+    }
+
+    private fun showLoaderNextPage(status: Boolean){
+        return when(status){
+            true -> {
+                scrolling = true
+                pbMovieNextPage.visibility = View.VISIBLE
+            }
+            false -> {
+                scrolling = false
+                pbMovieNextPage.visibility = View.GONE
+            }
+        }
+    }
+
 }
