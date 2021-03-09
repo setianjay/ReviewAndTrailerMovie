@@ -57,6 +57,11 @@ class MovieAdapter(val movies: ArrayList<MovieModel>, val listener: OnAdapterLis
         notifyDataSetChanged()
     }
 
+    fun setDataNextPage(newMovies: List<MovieModel>) {
+        movies.addAll(newMovies)
+        notifyDataSetChanged()
+    }
+
     interface OnAdapterListener {
         fun onClick(movie: MovieModel)
     }
