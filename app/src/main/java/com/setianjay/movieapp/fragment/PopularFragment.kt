@@ -15,6 +15,7 @@ import com.setianjay.movieapp.R
 import com.setianjay.movieapp.activity.DetailActivity
 import com.setianjay.movieapp.adapter.MovieAdapter
 import com.setianjay.movieapp.constants.Constants
+import com.setianjay.movieapp.databinding.FragmentPopularBinding
 import com.setianjay.movieapp.model.MovieModel
 import com.setianjay.movieapp.model.MovieResponse
 import com.setianjay.movieapp.retrofit.ApiService
@@ -25,12 +26,8 @@ import retrofit2.Response
 
 class PopularFragment : Fragment() {
     private val TAG = "PopularFragment"
-    private lateinit var v: View
-    private lateinit var nsvMovie: NestedScrollView
-    private lateinit var rvMovie: RecyclerView
-    private lateinit var pbMovie: ProgressBar
-    private lateinit var pbMovieNextPage: ProgressBar
-    private lateinit var movieAdapter: MovieAdapter
+    private lateinit var binding: FragmentPopularBinding // View Binding
+    private lateinit var movieAdapter: MovieAdapter // Data Adapter
 
     private var scrolling = false
     private var currentPage = 1
@@ -40,14 +37,12 @@ class PopularFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        v = inflater.inflate(R.layout.fragment_popular, container, false)
-        return v
+        binding  = FragmentPopularBinding.inflate(inflater,container,false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
         setUpRecycleView()
         setUpListener()
     }
@@ -58,12 +53,6 @@ class PopularFragment : Fragment() {
         showLoaderNextPage(false)
     }
 
-    private fun initView(){
-        nsvMovie = v.findViewById(R.id.nsv_movie)
-        rvMovie = v.findViewById(R.id.rv_movie)
-        pbMovie = v.findViewById(R.id.pb_movie)
-        pbMovieNextPage = v.findViewById(R.id.pb_movie_next_page)
-    }
 
     private fun setUpRecycleView(){
         movieAdapter = MovieAdapter(arrayListOf(),object : MovieAdapter.OnAdapterListener{
@@ -75,7 +64,7 @@ class PopularFragment : Fragment() {
 
         })
 
-        rvMovie.apply {
+        binding.rvMovie.apply {
             layoutManager = GridLayoutManager(context,2)
             adapter = movieAdapter
             setHasFixedSize(true)
@@ -83,7 +72,7 @@ class PopularFragment : Fragment() {
     }
 
     private fun setUpListener(){
-        nsvMovie.setOnScrollChangeListener(object : NestedScrollView.OnScrollChangeListener{
+        binding.nsvMovie.setOnScrollChangeListener(object : NestedScrollView.OnScrollChangeListener{
             override fun onScrollChange(
                 v: NestedScrollView?,
                 scrollX: Int,
@@ -157,8 +146,8 @@ class PopularFragment : Fragment() {
 
     private fun showLoading(loading: Boolean){
         return when(loading){
-            true -> pbMovie.visibility = View.VISIBLE
-            false -> pbMovie.visibility = View.GONE
+            true -> binding.pbMovie.visibility = View.VISIBLE
+            false -> binding.pbMovie.visibility = View.GONE
         }
     }
 
@@ -166,11 +155,11 @@ class PopularFragment : Fragment() {
         return when(status){
             true -> {
                 scrolling = true
-                pbMovieNextPage.visibility = View.VISIBLE
+                binding.pbMovieNextPage.visibility = View.VISIBLE
             }
             false -> {
                 scrolling = false
-                pbMovieNextPage.visibility = View.GONE
+                binding.pbMovieNextPage.visibility = View.GONE
             }
         }
     }
