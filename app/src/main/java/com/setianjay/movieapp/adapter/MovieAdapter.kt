@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.setianjay.movieapp.R
 import com.setianjay.movieapp.constants.Constants
+import com.setianjay.movieapp.databinding.ItemMoviesBinding
 import com.setianjay.movieapp.model.MovieModel
 import com.setianjay.movieapp.model.MovieResponse
 import com.setianjay.movieapp.util.Util
@@ -21,7 +22,7 @@ class MovieAdapter(val movies: ArrayList<MovieModel>, val listener: OnAdapterLis
     private val TAG = "MovieAdapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_movies, parent, false)
+        ItemMoviesBinding.inflate(LayoutInflater.from(parent.context),parent,false)
     )
 
     override fun getItemCount(): Int {
@@ -30,22 +31,19 @@ class MovieAdapter(val movies: ArrayList<MovieModel>, val listener: OnAdapterLis
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(movies[position])
-        holder.imgMovies.setOnClickListener {
+        holder.binding.imgMovie.setOnClickListener {
             listener.onClick(movies[position])
         }
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imgMovies = view.findViewById<ImageView>(R.id.img_movie)
-        val labelTitleMovies = view.findViewById<TextView>(R.id.tv_label_title)
-        val labelDateMovies = view.findViewById<TextView>(R.id.tv_label_date)
+    inner class ViewHolder(val binding: ItemMoviesBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(movies: MovieModel) {
-            labelTitleMovies.text = movies.title
-            labelDateMovies.text = movies.release_date
+            binding.tvLabelTitle.text = movies.title
+            binding.tvLabelDate.text = movies.release_date
             Picasso.get()
                 .load(Constants.POSTER_PATH + movies.poster_path)
-                .into(imgMovies)
+                .into(binding.imgMovie)
 //            Log.d(TAG,movies.backdrop_path!!)
         }
 
